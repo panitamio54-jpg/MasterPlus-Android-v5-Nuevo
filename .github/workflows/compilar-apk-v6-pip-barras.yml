@@ -1,0 +1,41 @@
+name: Compilador APK MasterPlus v6 PiP y barras
+
+on:
+  workflow_dispatch:
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descomprimir proyecto v6
+        run: |
+          rm -rf proyecto-v6
+          mkdir proyecto-v6
+          unzip -o "MasterPlus_Android_v6_PiP_Barras_Corregidas.zip" -d proyecto-v6
+          cd proyecto-v6/mp6
+          cp -a . "$GITHUB_WORKSPACE/"
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Compilar APK
+        run: gradle assembleDebug
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MasterPlus-v6-PiP-Barras-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
