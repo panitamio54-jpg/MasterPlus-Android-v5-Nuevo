@@ -1,4 +1,4 @@
-name: Compilador APK MasterPlus v7 PiP Solo Reproductor
+name: Compilador APK MasterPlus v7 PiP Solo Reproductor FINAL
 
 on:
   workflow_dispatch:
@@ -11,11 +11,11 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Descomprimir proyecto v7
+      - name: Descomprimir proyecto v7 FINAL
         run: |
           rm -rf proyecto-v7
           mkdir proyecto-v7
-          unzip -o "MasterPlus_Android_v7_PiP_Solo_Reproductor.zip" -d proyecto-v7
+          unzip -o "MasterPlus_Android_v7_PiP_Solo_Reproductor_FINAL.zip" -d proyecto-v7
           cp -a proyecto-v7/mp7/. "$GITHUB_WORKSPACE/"
 
       - name: Configurar Java 17
@@ -39,6 +39,6 @@ jobs:
       - name: Publicar APK
         uses: actions/upload-artifact@v4
         with:
-          name: MasterPlus-v7-PiP-Solo-Reproductor-APK
+          name: MasterPlus-v7-PiP-Solo-Reproductor-FINAL-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
