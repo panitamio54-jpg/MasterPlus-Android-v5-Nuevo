@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  construir:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +16,7 @@ jobs:
           rm -rf proyecto-v7
           mkdir proyecto-v7
           unzip -o "MasterPlus_Android_v7_PiP_Solo_Reproductor.zip" -d proyecto-v7
-          cd proyecto-v7/mp7
+          cd proyecto-v7
           cp -a . "$GITHUB_WORKSPACE/"
 
       - name: Configurar Java 17
