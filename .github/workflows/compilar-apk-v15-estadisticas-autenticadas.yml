@@ -1,0 +1,49 @@
+name: Compilador APK MasterPlus v15 Estadisticas Autenticadas
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descomprimir proyecto v15
+        run: |
+          rm -rf proyecto-v15
+          mkdir proyecto-v15
+          unzip -o "MasterPlus_Android_v15_Estadisticas_Autenticadas.zip" -d proyecto-v15
+          cp -a proyecto-v15/mp15analytics/. "$GITHUB_WORKSPACE/"
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Dar permisos al proyecto
+        run: chmod +x gradlew 2>/dev/null || true
+
+      - name: Verificar v15 y autenticacion analytics
+        run: |
+          grep -q 'versionName "2.3.0"' app/build.gradle
+          grep -q 'application/json; charset=UTF-8' app/src/main/java/com/teletop/masterplus/AnalyticsReporter.java
+          grep -q 'getCookie(BASE_URL)' app/src/main/java/com/teletop/masterplus/AnalyticsReporter.java
+          grep -q 'session_id' app/src/main/java/com/teletop/masterplus/AnalyticsReporter.java
+
+      - name: Compilar APK
+        run: gradle assembleDebug
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MasterPlus-v15-Estadisticas-Autenticadas-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
