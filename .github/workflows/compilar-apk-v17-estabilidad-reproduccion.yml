@@ -1,0 +1,49 @@
+name: Compilador APK MasterPlus v17 Estabilidad Reproduccion
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descomprimir proyecto v17
+        run: |
+          rm -rf proyecto-v17
+          mkdir proyecto-v17
+          unzip -o "MasterPlus_Android_v17_Estabilidad_Reproduccion.zip" -d proyecto-v17
+          cp -a proyecto-v17/mp17stable/. "$GITHUB_WORKSPACE/"
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Dar permisos
+        run: chmod +x gradlew 2>/dev/null || true
+
+      - name: Verificar v17
+        run: |
+          grep -q 'versionName "2.5.0"' app/build.gradle
+          grep -q 'RENDERER_PRIORITY_IMPORTANT' app/src/main/java/com/teletop/masterplus/MainActivity.java
+          grep -q 'ACTION_SCREEN_OFF' app/src/main/java/com/teletop/masterplus/MainActivity.java
+          ! grep -q 'window.fetch=function' app/src/main/java/com/teletop/masterplus/MainActivity.java
+
+      - name: Compilar APK
+        run: gradle assembleDebug
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MasterPlus-v17-Estabilidad-Reproduccion-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
